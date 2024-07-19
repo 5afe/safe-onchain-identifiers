@@ -33,7 +33,10 @@ describe("Onchain Identifier", function () {
         const userOpHash = await contracts.EntryPoint.getUserOpHash(
           packedUserOp,
         );
-        const EntryPoint = await ethers.getContractAt("EntryPoint", entryPoint);
+        const EntryPoint = await ethers.getContractAt(
+          "EntryPoint",
+          await ethers.resolveAddress(entryPoint),
+        );
         await EntryPoint.connect(relayer).handleOps(
           [packedUserOp],
           relayer,
