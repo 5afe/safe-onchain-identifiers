@@ -328,7 +328,7 @@ describe("Onchain Identifier", function () {
         it("Standard", async function () {
           const { contracts, owner, safe } = await loadFixture(setup);
 
-          const transaction = await safe.execTransaction(
+          await safe.execTransaction(
             contracts.Counter,
             0,
             contracts.Counter.interface.encodeFunctionData("increment"),
@@ -340,12 +340,9 @@ describe("Onchain Identifier", function () {
             IDENTIFIER,
             await approvedHashSignature(owner),
           );
-          const receipt = await transaction.wait();
-          const { data, topics } = receipt!.logs[0];
-          const { refundReceiver } = safe.interface.decodeEventLog(
-            "SafeMultiSigTransaction",
-            data,
-            topics,
+
+          const [{ args: { refundReceiver } }] = await safe.queryFilter(
+            safe.getEvent("SafeMultiSigTransaction")(),
           );
           expect(refundReceiver).to.equal(IDENTIFIER);
         });
